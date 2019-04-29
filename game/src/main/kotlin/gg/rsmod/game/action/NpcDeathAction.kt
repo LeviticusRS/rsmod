@@ -2,9 +2,12 @@ package gg.rsmod.game.action
 
 import gg.rsmod.game.fs.def.AnimDef
 import gg.rsmod.game.model.LockState
+import gg.rsmod.game.model.World
 import gg.rsmod.game.model.attr.KILLER_ATTR
+import gg.rsmod.game.model.entity.GroundItem
 import gg.rsmod.game.model.entity.Npc
 import gg.rsmod.game.model.entity.Player
+import gg.rsmod.game.model.item.Item
 import gg.rsmod.game.model.queue.QueueTask
 import gg.rsmod.game.model.queue.TaskPriority
 import gg.rsmod.game.plugin.Plugin
@@ -50,6 +53,10 @@ object NpcDeathAction {
 
         npc.animate(-1)
 
+        npc.attr[KILLER_ATTR]?.get()?.let { killer ->
+            npc.dropLoot(world, killer as? Player)
+        }
+
         world.plugins.executeNpcDeath(npc)
 
         if (npc.respawns) {
@@ -71,5 +78,37 @@ object NpcDeathAction {
         attr.clear()
         timers.clear()
         world.setNpcDefaults(this)
+    }
+
+    private fun Npc.dropLoot(world: World, killer: Player?) {
+        val dropSet = world.dropRepository[id] ?: return
+
+        val dropTile = if (killer != null && dropSet.tile != null) {
+            dropSet.tile.invoke(this, killer)
+        } else {
+            tile
+        }
+        val staticDrops = dropSet.staticDrops
+        val dynamicDrops = dropSet.dynamicDrops
+        val dynamicRolls = dropSet.dynamicRolls
+
+        staticDrops.forEach { drop ->
+            val item = Item(drop.item, drop.amount)
+            world.spawn(GroundItem(item, dropTile, killer))
+        }
+
+        repeat(dynamicRolls) {
+            for (drop in dynamicDrops) {
+                val success = world.chance(1, drop.rate)
+                if (success) {
+                    val item = Item(drop.item, drop.amount)
+                    world.spawn(GroundItem(item, dropTile, killer))
+                    killer?.let { player ->
+                        drop.action?.invoke(this, player)
+                    }
+                    break
+                }
+            }
+        }
     }
 }

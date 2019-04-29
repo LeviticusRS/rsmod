@@ -364,9 +364,9 @@ class PluginRepository(val world: World) {
     /**
      * Initiates and populates all our plugins.
      */
-    fun init(server: Server, world: World, jarPluginsDirectory: String) {
+    fun init(server: Server, jarPluginsDirectory: String) {
         loadPlugins(server, jarPluginsDirectory)
-        loadServices(server, world)
+        loadServices(server)
         spawnEntities()
     }
 
@@ -427,7 +427,7 @@ class PluginRepository(val world: World) {
     /**
      * Load and initialise [Service]s given to us by [KotlinPlugin]s.
      */
-    private fun loadServices(server: Server, world: World) {
+    private fun loadServices(server: Server) {
         services.forEach { service ->
             service.init(server, world, ServerProperties())
             world.services.add(service)

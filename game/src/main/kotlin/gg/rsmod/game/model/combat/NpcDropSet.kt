@@ -1,17 +1,25 @@
 package gg.rsmod.game.model.combat
 
 import gg.rsmod.game.model.Tile
+import gg.rsmod.game.model.entity.Npc
+import gg.rsmod.game.model.entity.Player
 
 /**
- * Holds data in regards to one or more [NpcDrop]s.
+ * Holds data in regards to one or more [NpcDynamicDrop]s.
  *
- * @param tile the [Tile] where [drops] will appear on.
+ * @param dynamicRolls the amount of items that will be selected from [dynamicDrops]
+ * as items that will be dropped.
  *
- * @param delay the delay before the [drops] are registered to the world, in
- * game cycles.
+ * @param tile receiver function used to modify the [Tile] where the drop will
+ * be dropped.
  *
- * @param drops a [Collection] of [NpcDrop] that are being dropped.
+ * @param staticDrops a [Collection] of [NpcDynamicDrop]
+ *
+ * @param dynamicDrops a [Collection] of [NpcDynamicDrop] that have the possibility of
+ * being dropped.
  *
  * @author Tom <rspsmods@gmail.com>
  */
-data class NpcDropSet(val tile: Tile, val delay: Int, val drops: Collection<NpcDrop>)
+data class NpcDropSet(val dynamicRolls: Int, val tile: ((Npc, Player) -> Tile)?,
+                      val staticDrops: Collection<NpcStaticDrop>,
+                      val dynamicDrops: Collection<NpcDynamicDrop>)

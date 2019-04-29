@@ -12,13 +12,7 @@ import gg.rsmod.game.message.impl.LogoutFullMessage
 import gg.rsmod.game.message.impl.UpdateRebootTimerMessage
 import gg.rsmod.game.model.collision.CollisionManager
 import gg.rsmod.game.model.combat.NpcCombatDef
-import gg.rsmod.game.model.entity.AreaSound
-import gg.rsmod.game.model.entity.GameObject
-import gg.rsmod.game.model.entity.GroundItem
-import gg.rsmod.game.model.entity.Npc
-import gg.rsmod.game.model.entity.Pawn
-import gg.rsmod.game.model.entity.Player
-import gg.rsmod.game.model.entity.Projectile
+import gg.rsmod.game.model.entity.*
 import gg.rsmod.game.model.instance.InstancedMapAllocator
 import gg.rsmod.game.model.priv.PrivilegeSet
 import gg.rsmod.game.model.queue.QueueTask
@@ -30,6 +24,7 @@ import gg.rsmod.game.model.shop.Shop
 import gg.rsmod.game.model.timer.TimerMap
 import gg.rsmod.game.plugin.Plugin
 import gg.rsmod.game.plugin.PluginRepository
+import gg.rsmod.game.plugin.drop.DropRepository
 import gg.rsmod.game.service.GameService
 import gg.rsmod.game.service.Service
 import gg.rsmod.game.service.xtea.XteaKeyService
@@ -102,6 +97,11 @@ class World(val gameContext: GameContext, val devContext: DevContext) {
      * The plugin repository that's responsible for storing all the plugins found.
      */
     var plugins = PluginRepository(this)
+
+    /**
+     * The npc drop repository.
+     */
+    var dropRepository = DropRepository(this)
 
     /**
      * The [PrivilegeSet] that is attached to our game.
